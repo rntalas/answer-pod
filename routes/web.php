@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\IndexController;
 
-Route::get('/', [IndexController::class, 'index']);
+$routes = require __DIR__ . '/routes.php';
+
+foreach($routes as $url => $route) {
+    Route::view($url, $route);
+}

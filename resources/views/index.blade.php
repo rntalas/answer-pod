@@ -1,11 +1,7 @@
 @php
-    $title = 'sdsadf';
-
+    $title = 'Home';
 @endphp
 
 @include('partials.header')
-<section class="">
-    {{$name}}
-</section>
-
+<div class="text-black">hi</div>
 @include('partials.footer')
