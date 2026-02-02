@@ -25,6 +25,7 @@
     "test": "tests"
   },
   "dependencies": {
+    "@tailwindcss/language-server": "^0.14.29",
     "@vitejs/plugin-vue": "^6.0.4",
     "ansi-regex": "^5.0.1",
     "ansi-styles": "^4.3.0",

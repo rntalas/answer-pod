@@ -10,7 +10,7 @@ class PageController extends Controller
 
     public function index($slug = 'home')
     {
-        $view = 'pages.' . ($slug ?: 'home');
+        $view = 'pages.'.($slug ?: 'home');
 
         if (!view()->exists($view)) {
             abort(404);
@@ -18,7 +18,7 @@ class PageController extends Controller
 
         $title = ucfirst(str_replace('-', ' ', $slug ?: 'home'));
 
-        $lessons = new Lessons();
+        $lessons = new Lessons;
 
         return view($view, compact('title', 'lessons'));
     }
