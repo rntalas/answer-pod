@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Entries;
 use App\Models\Lessons;
 use App\Models\Subjects;
-use App\Models\Entries;
 
 class PageController extends Controller
 {
