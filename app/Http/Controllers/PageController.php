@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Lessons;
+use App\Models\Subjects;
+use App\Models\Entries;
 
 class PageController extends Controller
 {
@@ -19,7 +21,9 @@ class PageController extends Controller
         $title = ucfirst(str_replace('-', ' ', $slug ?: 'home'));
 
         $lessons = new Lessons;
+        $subjects = new Subjects;
+        $entries = new Entries;
 
-        return view($view, compact('title', 'lessons'));
+        return view($view, compact('title', 'lessons', 'subjects', 'entries'));
     }
 }
