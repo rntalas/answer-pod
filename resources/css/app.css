@@ -15,11 +15,11 @@ a {
 }
 
 .btn {
-    @apply bg-black text-white rounded-full px-4 lg:px-8 py-1 lg:py-2.5 inline-flex items-center justify-center border lg:text-xl text-base transition-colors duration-200;
+    @apply bg-black text-white px-4 lg:px-4 inline-flex items-center justify-center border text-lg transition-colors duration-200 py-1 cursor-pointer w-fit rounded-xl;
 }
 
 .btn:hover {
-    @apply bg-white text-black border-zinc-500 shadow-md scale-105;
+    @apply bg-white text-black border-zinc-500 shadow-md;
 }
 
 html {
@@ -34,6 +34,6 @@ main {
     @apply mb-16 lg:mb-20;
 }
 
-input {
-    @apply border hover:focus:border-zinc-500 outline-none bg-white hidden md:block md:w-48 xl:w-96;
+input[type=text] {
+    @apply border hover:border-zinc-500 focus:border-zinc-500 outline-none bg-zinc-100 border-zinc-300 px-4 py-2 focus:bg-white hover:bg-white hover:focus:shadow-md;
 }
