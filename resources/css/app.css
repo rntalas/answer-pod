@@ -27,11 +27,11 @@ html {
 }
 
 body {
-    @apply flex flex-col min-h-screen m-0;
+    @apply flex flex-col min-h-screen m-0 bg-zinc-100;
 }
 
-[class*="border"] {
-    @apply border-zinc-200;
+main {
+    @apply mb-16 lg:mb-20;
 }
 
 input {
