@@ -80,6 +80,8 @@ return [
 
     'locale' => env('APP_LOCALE', 'en'),
 
+    'default_locale_id' => (int) env('APP_DEFAULT_LOCALE_ID', 1),
+
     'fallback_locale' => env('APP_FALLBACK_LOCALE', 'en'),
 
     'faker_locale' => env('APP_FAKER_LOCALE', 'en_US'),
