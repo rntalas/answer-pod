@@ -34,7 +34,7 @@ class SubjectController extends Controller
 
         Subject::query()->create($validated);
 
-        return redirect()->route('page.view', ['slug' => '']);
+        return redirect()->route('page.show', ['slug' => '']);
     }
 
     public function edit($id)
@@ -57,6 +57,6 @@ class SubjectController extends Controller
         $subject?->delete();
 
         return redirect()
-            ->route('page.view', ['slug' => '']);
+            ->route('page.show', ['slug' => '']);
     }
 }
