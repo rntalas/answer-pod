@@ -23,29 +23,29 @@
         </div>
 
         <div class="flex justify-center items-center gap-4 lg:mr-20">
-            <input type="text" placeholder="Search..." class="hidden md:block md:w-48 xl:w-96 rounded-full bg-white!"
-                name="lesson">
+            <input type="text" placeholder="@lang('app.placeholder.search')"
+                class="hidden md:block md:w-48 xl:w-96 rounded-full bg-white!" name="lesson">
 
             <div class="w-10 h-10 rounded-full p-2 border border-zinc-200 bg-white cursor-pointer hover:shadow-md">
                 @svg('heroicon-o-magnifying-glass')
             </div>
 
-            <div x-data="localeSwitcher()" class="relative inline-block">
-                <!-- Globe button -->
+            <div x-data="localeSwitcher(@js($locales))" class="relative inline-block">
                 <div @click="toggle()"
                     class="w-10 h-10 rounded-full p-2 border border-zinc-200 bg-white cursor-pointer hover:shadow-md">
                     @svg('heroicon-o-globe-alt')
                 </div>
 
-                <div x-show="open" @click.away="$data.open = false" x-transition
-                    class="absolute mt-2 w-24 bg-white border border-zinc-200 rounded shadow-lg z-50">
-                    <template x-for="locale in locales" :key="locale.code">
-                        <div @click="setLocale(locale.code)"
-                            class="px-2 py-2 cursor-pointer hover:bg-zinc-100 flex justify-start" x-text="locale.label">
-                        </div>
+                <ul x-show="open" @click.away="$data.open = false" x-cloak
+                    class="absolute right-0 mt-1 border border-zinc-200 bg-white z-10 w-40 rounded-xl overflow-hidden">
+                    <template x-for="locale in locales" :key="locale.id">
+                        <li @click="setLocale(locale); $data.open = false"
+                            class="flex items-center gap-2 px-4 py-2 hover:bg-gray-100 cursor-pointer">
+                            <img :src="locale.image" :alt="locale.name" class="h-5 w-5">
+                            <span x-text="locale.name"></span>
+                        </li>
                     </template>
-                </div>
+                </ul>
             </div>
-
         </div>
     </header>
