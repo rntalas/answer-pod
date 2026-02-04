@@ -4,9 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-/**
- * @method static create(array $validated)
- */
 class Entry extends Model
 {
     //
