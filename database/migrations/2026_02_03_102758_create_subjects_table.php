@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('subjects', static function (Blueprint $table) {
             $table->id();
-            $table->string('title');
+            $table->string('name');
             $table->unsignedInteger('units');
 
             $table->foreignId('locale_id')
@@ -21,7 +21,7 @@ return new class extends Migration
 
             $table->timestamps();
 
-            $table->unique(['title', 'locale_id']);
+            $table->unique(['name', 'locale_id']);
         });
     }
 
