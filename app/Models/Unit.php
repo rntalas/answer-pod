@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * @method static create(array $validated)
  */
-class Lesson extends Model
+class Unit extends Model
 {
     //
 }
