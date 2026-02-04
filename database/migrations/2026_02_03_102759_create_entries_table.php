@@ -11,12 +11,13 @@ return new class extends Migration
         Schema::create('entries', static function (Blueprint $table) {
             $table->id();
             $table->integer('number');
-            $table->string('image')->nullable();
+            $table->text('statement')->nullable();
             $table->text('solution')->nullable();
+            $table->unsignedInteger('unit')->nullable();
 
-            $table->foreignId('lesson_id')
+            $table->foreignId('subject_id')
                 ->nullable()
-                ->constrained('units')
+                ->constrained('subjects')
                 ->cascadeOnUpdate()
                 ->nullOnDelete();
 
@@ -27,6 +28,8 @@ return new class extends Migration
                 ->nullOnDelete();
 
             $table->timestamps();
+
+            $table->unique(['subject_id', 'unit', 'number', 'locale_id']);
         });
     }
 

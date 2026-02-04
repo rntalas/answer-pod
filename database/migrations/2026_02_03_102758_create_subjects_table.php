@@ -11,6 +11,7 @@ return new class extends Migration
         Schema::create('subjects', static function (Blueprint $table) {
             $table->id();
             $table->string('title');
+            $table->unsignedInteger('units');
 
             $table->foreignId('locale_id')
                 ->nullable()
@@ -19,6 +20,8 @@ return new class extends Migration
                 ->nullOnDelete();
 
             $table->timestamps();
+
+            $table->unique(['title', 'locale_id']);
         });
     }
 
