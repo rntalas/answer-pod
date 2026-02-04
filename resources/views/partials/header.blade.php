@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $title }}</title>
     <link rel="icon" type="image/x-icon" href="{{ asset('images/favicon.png') }}">
-    @vite('resources/js/app.js')
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 
 <body>
@@ -29,5 +29,23 @@
             <div class="w-10 h-10 rounded-full p-2 border border-zinc-200 bg-white cursor-pointer hover:shadow-md">
                 @svg('heroicon-o-magnifying-glass')
             </div>
+
+            <div x-data="localeSwitcher()" class="relative inline-block">
+                <!-- Globe button -->
+                <div @click="toggle()"
+                    class="w-10 h-10 rounded-full p-2 border border-zinc-200 bg-white cursor-pointer hover:shadow-md">
+                    @svg('heroicon-o-globe-alt')
+                </div>
+
+                <div x-show="open" @click.away="$data.open = false" x-transition
+                    class="absolute mt-2 w-24 bg-white border border-zinc-200 rounded shadow-lg z-50">
+                    <template x-for="locale in locales" :key="locale.code">
+                        <div @click="setLocale(locale.code)"
+                            class="px-2 py-2 cursor-pointer hover:bg-zinc-100 flex justify-start" x-text="locale.label">
+                        </div>
+                    </template>
+                </div>
+            </div>
+
         </div>
     </header>
