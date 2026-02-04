@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('lessons', function (Blueprint $table) {
+        Schema::create('units', static function (Blueprint $table) {
             $table->id();
             $table->integer('number');
 
@@ -24,6 +24,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('lessons');
+        Schema::dropIfExists('units');
     }
 };

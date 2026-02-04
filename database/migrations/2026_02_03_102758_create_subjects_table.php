@@ -6,11 +6,18 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up()
+    public function up(): void
     {
-        Schema::create('subjects', function (Blueprint $table) {
+        Schema::create('subjects', static function (Blueprint $table) {
             $table->id();
             $table->string('title');
+
+            $table->foreignId('locale_id')
+                ->nullable()
+                ->constrained('locales')
+                ->cascadeOnUpdate()
+                ->nullOnDelete();
+
             $table->timestamps();
         });
     }

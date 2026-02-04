@@ -8,7 +8,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('entries', function (Blueprint $table) {
+        Schema::create('entries', static function (Blueprint $table) {
             $table->id();
             $table->integer('number');
             $table->string('image')->nullable();
@@ -16,7 +16,7 @@ return new class extends Migration
 
             $table->foreignId('lesson_id')
                 ->nullable()
-                ->constrained('lessons')
+                ->constrained('units')
                 ->cascadeOnUpdate()
                 ->nullOnDelete();
 
