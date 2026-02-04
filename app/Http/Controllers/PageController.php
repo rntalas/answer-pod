@@ -2,27 +2,30 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Subject;
 use App\Models\Locale;
+use App\Models\Subject;
 use Illuminate\Support\Facades\App;
 
 class PageController extends Controller
 {
-    public function index($slug = 'home')
+    public function index($slug = 'index')
     {
-        $view = 'pages.' . ($slug ?: 'home');
+        $view = $slug ?: 'index';
 
-        if (!view()->exists($view)) {
+        if (! view()->exists($view)) {
             abort(404);
         }
 
-        $title = ucfirst(str_replace('-', ' ', $slug ?: 'home'));
         $locales = Locale::all();
 
-        $localeId = Locale::where('code', App::currentLocale())->value('id');
+        $defaultLocaleId = config('app.default_locale_id');
+        $currentLocaleId = Locale::query()->where('code', App::currentLocale())->value('id') ?? $defaultLocaleId;
 
-        $subjects = Subject::where('locale_id', $localeId)->get();
+        $subjects = Subject::query()->whereIn('locale_id', [$defaultLocaleId, $currentLocaleId])
+            ->orderByRaw("locale_id = $currentLocaleId DESC")
+            ->get()
+            ->unique('id');
 
-        return view($view, compact('title', 'subjects', 'locales'));
+        return view($view, compact('subjects', 'locales'));
     }
 }
