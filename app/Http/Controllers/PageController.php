@@ -2,28 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Entry;
-use App\Models\Lesson;
 use App\Models\Subject;
+use App\Models\Locale;
+use Illuminate\Support\Facades\App;
 
 class PageController extends Controller
 {
-    public static string $title;
-
     public function index($slug = 'home')
     {
-        $view = 'pages.'.($slug ?: 'home');
+        $view = 'pages.' . ($slug ?: 'home');
 
-        if (! view()->exists($view)) {
+        if (!view()->exists($view)) {
             abort(404);
         }
 
         $title = ucfirst(str_replace('-', ' ', $slug ?: 'home'));
+        $locales = Locale::all();
 
-        $lessons = Lesson::all();
-        $subjects = Subject::all();
-        $entries = Entry::all();
+        $localeId = Locale::where('code', App::currentLocale())->value('id');
 
-        return view($view, compact('title', 'lessons', 'subjects', 'entries'));
+        $subjects = Subject::where('locale_id', $localeId)->get();
+
+        return view($view, compact('title', 'subjects', 'locales'));
     }
 }
