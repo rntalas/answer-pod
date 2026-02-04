@@ -13,7 +13,7 @@ class ViewServiceProvider extends ServiceProvider
         View::composer('partials.header', static function ($view) {
             $view->with(
                 'locales',
-                Locale::select('id', 'code', 'name', 'image')->get(),
+                Locale::query()->select('id', 'code', 'name', 'image')->get(),
             );
         });
     }
