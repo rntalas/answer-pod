@@ -18,7 +18,7 @@ return new class extends Migration
                 ->cascadeOnDelete();
             $table->string('name');
             $table->string('description')
-                    ->nullable();
+                ->nullable();
             $table->timestamps();
 
             $table->unique(['subject_id', 'locale_id']);

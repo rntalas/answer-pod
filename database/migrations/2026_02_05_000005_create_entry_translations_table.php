@@ -21,8 +21,8 @@ return new class extends Migration
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
 
-            $table->text('statement')->nullable();
-            $table->text('solution')->nullable();
+            $table->text('statement');
+            $table->text('solution');
 
             $table->timestamps();
 
