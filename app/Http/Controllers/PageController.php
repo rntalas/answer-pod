@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Locale;
 use App\Models\Subject;
-use Illuminate\Support\Facades\App;
 
 class PageController extends Controller
 {
@@ -18,13 +17,7 @@ class PageController extends Controller
 
         $locales = Locale::all();
 
-        $defaultLocaleId = config('app.default_locale_id');
-        $currentLocaleId = Locale::query()->where('code', App::currentLocale())->value('id') ?? $defaultLocaleId;
-
-        $subjects = Subject::query()->whereIn('locale_id', [$defaultLocaleId, $currentLocaleId])
-            ->orderByRaw("locale_id = $currentLocaleId DESC")
-            ->get()
-            ->unique('id');
+        $subjects = Subject::with('translations')->get();
 
         return view($view, compact('subjects', 'locales'));
     }
