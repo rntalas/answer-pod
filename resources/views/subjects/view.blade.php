@@ -11,6 +11,12 @@
         </x-confirm-delete>
     </div>
 
+    @if (!blank($subject->description))
+        <p class="text-lg pb-4">
+            {{ $subject->description }}
+        </p>
+    @endif
+
     <p class="pb-4">
         @lang('subject.units', ['count' => $subject->units])
     </p>
