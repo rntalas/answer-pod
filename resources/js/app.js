@@ -29,8 +29,32 @@ Alpine.data('localeSwitcher', (locales) => ({
     }
 }));
 
-Alpine.data('localeForm', () => {
-    //
-});
+Alpine.data('localeForm', (translations, defaultLocaleId) => ({
+    selectedLocale: parseInt(defaultLocaleId),
+    fields: {},
+
+    init() {
+        if (translations.length > 0) {
+            Object.keys(translations[0]).forEach(key => {
+                this.fields[key] = '';
+            });
+        }
+
+        this.loadTranslation(this.selectedLocale);
+    },
+
+    setLocale(localeId) {
+        this.selectedLocale = parseInt(localeId);
+        this.loadTranslation(localeId);
+    },
+
+    loadTranslation(localeId) {
+        const translation = translations.find(t => t.locale_id === Number(localeId));
+
+        Object.keys(this.fields).forEach(field => {
+            this.fields[field] = translation?.[field] || '';
+        });
+    }
+}));
 
 Alpine.start();
