@@ -14,7 +14,8 @@
             </div>
 
             <label for="description">@lang('subject.label.description')</label>
-            <textarea name="description" id="description" cols="30" rows="8" placeholder="@lang('subject.placeholder.description')" class="rounded-xl"></textarea>
+            <textarea name="description" id="description" cols="30" rows="8" placeholder="@lang('subject.placeholder.description')"
+                class="rounded-xl"></textarea>
 
             <div class="flex flex-col gap-2">
                 <label for="units">@lang('subject.label.units')</label>
