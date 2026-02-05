@@ -13,15 +13,24 @@
                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                 @enderror
             </div>
-
             <div class="flex flex-col gap-2">
                 <label for="units" class="text-lg font-bold">@lang('subject.label.units')</label>
                 <input type="number" id="units" name="units" min="1" max="100"
                     value="{{ $subject->units }}" class="rounded-xl w-fit">
             </div>
-
-            <input type="hidden" name="locale_id" value="1">
-
+            <div class="flex flex-col gap-2">
+                <label for="locale_id" class="text-lg font-bold">@lang('subject.label.locale')</label>
+                <div class="flex gap-2 items-center">
+                    <select id="locale_id" name="locale_id" class="rounded px-2 py-1 border">
+                        @foreach ($locales as $locale)
+                            <option value="{{ $locale->id }}"
+                                {{ $locale->id === $subject->locale_id ? 'selected' : '' }}>
+                                {{ $locale->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
             <input type="submit" value="@lang('subject.button.save')" class="btn mt-4">
         </div>
     </form>
