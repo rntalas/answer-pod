@@ -1,6 +1,6 @@
 @props(['action', 'title' => $title ?? ''])
 
-<div x-data="{ open: false }" class="inline-block">
+<div x-data="{ open: false }" class="h-4 w-4">
     <button type="button" @click="open = true" {{ $attributes }}>
         {{ $slot }}
     </button>
