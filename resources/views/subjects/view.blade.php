@@ -6,8 +6,8 @@
             @svg('heroicon-s-pencil-square', 'h-5 w-5 cursor-pointer')
         </a>
 
-        <x-confirm-delete :action="route('subject.destroy', $subject)">
-            @svg('heroicon-s-x-mark', 'h-5 w-5 cursor-pointer text-red-600')
+        <x-confirm-delete :action="route('subject.destroy', $subject)" :title="__('subject.confirm')">
+            @svg('heroicon-o-trash', 'h-5 w-5 cursor-pointer')
         </x-confirm-delete>
     </div>
 
