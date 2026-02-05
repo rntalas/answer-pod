@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class EntryTranslation extends Model
 {
-    protected $fillable = ['entry_id', 'locale_id', 'statement', 'solution'];
+    protected $fillable = ['entry_id', 'statement', 'solution', 'locale_id'];
 
     public function entry(): BelongsTo
     {
