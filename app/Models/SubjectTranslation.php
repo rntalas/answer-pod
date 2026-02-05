@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SubjectTranslation extends Model
 {
-    protected $fillable = ['subject_id', 'locale_id', 'name'];
+    protected $fillable = ['subject_id', 'locale_id', 'name', 'description'];
 
     public function subject(): BelongsTo
     {
