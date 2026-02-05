@@ -1,7 +1,7 @@
 @props(['action', 'title' => $title ?? ''])
 
-<div x-data="{ open: false }" class="inline-block">
-    <button type="button" @click="open = true" {{ $attributes }}>
+<div x-data="{ open: false }" class="h-5 w-5">
+    <button type="button" @click="open = true" {{ $attributes }}  title="@lang('app.delete')">
         {{ $slot }}
     </button>
 
