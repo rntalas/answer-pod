@@ -6,14 +6,15 @@ use App\Models\Entry;
 use App\Models\EntryTranslation;
 use App\Models\Locale;
 use App\Models\Subject;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Database\Eloquent\Collection;
 
 class EntryController extends Controller
 {
-    protected function getSubjects(): Collection {
-        return Subject::with(['translations' => function($query) {
+    protected function getSubjects(): Collection
+    {
+        return Subject::with(['translations' => function ($query) {
             $query->select('id', 'subject_id', 'name', 'locale_id')
                 ->whereIn('locale_id', [Subject::getCurrentLocaleId(), config('app.default_locale_id', 1)]);
         }])->get(['id', 'units']);
