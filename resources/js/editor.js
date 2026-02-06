@@ -8,19 +8,20 @@ import { oneDark } from "@codemirror/theme-one-dark";
 window.codeMirrorEditor = function () {
     return {
         editor: null,
+        minimized: false,
 
         setup(name, encodedValue, language = 'javascript', theme = 'dark') {
-            const initialValue = encodedValue ? atob(encodedValue) : ''
-            const lang = language.toLowerCase()
+            const initialValue = encodedValue ? atob(encodedValue) : '';
+            const lang = language.toLowerCase();
 
-            let langExtension
+            let langExtension;
             switch (lang) {
                 case 'html':
-                    langExtension = html()
-                    break
+                    langExtension = html();
+                    break;
                 case 'javascript':
                 default:
-                    langExtension = javascript()
+                    langExtension = javascript();
             }
 
             const extensions = [
@@ -29,13 +30,13 @@ window.codeMirrorEditor = function () {
                 EditorView.lineWrapping,
                 EditorView.updateListener.of(update => {
                     if (update.docChanged) {
-                        this.$refs.hidden.value = update.state.doc.toString()
+                        this.$refs.hidden.value = update.state.doc.toString();
                     }
                 }),
-            ]
+            ];
 
             if (theme === 'dark') {
-                extensions.push(oneDark)
+                extensions.push(oneDark);
             }
 
             this.editor = new EditorView({
@@ -44,9 +45,7 @@ window.codeMirrorEditor = function () {
                     extensions,
                 }),
                 parent: this.$refs.editor,
-            })
+            });
         },
     }
 }
-
-
