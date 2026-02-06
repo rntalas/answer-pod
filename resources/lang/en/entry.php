@@ -2,9 +2,6 @@
 
 return [
     'create' => 'Create an entry',
-    'hint' => [
-        'statement' => 'You can enter a statement or upload an image by clicking on the image above.',
-    ],
     'button' => [
         'add' => 'Add entry',
         'save' => 'Save changes',
