@@ -8,16 +8,22 @@ use App\Models\Locale;
 use App\Models\Subject;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Database\Eloquent\Collection;
 
 class EntryController extends Controller
 {
+    protected function getSubjects(): Collection {
+        return Subject::with(['translations' => function($query) {
+            $query->select('id', 'subject_id', 'name', 'locale_id')
+                ->whereIn('locale_id', [Subject::getCurrentLocaleId(), config('app.default_locale_id', 1)]);
+        }])->get(['id', 'units']);
+    }
+
     public function create(Request $request)
     {
-        $subjects = Subject::with('translations')->get();
-        $subjectId = $request->query('subject_id');
-        $subject = $subjectId ? Subject::findOrFail($subjectId) : null;
+        $subjects = $this->getSubjects();
 
-        return view('entries.create', compact('subjects', 'subject'));
+        return view('entries.create', compact('subjects', 'subjects'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -25,7 +31,7 @@ class EntryController extends Controller
         $mainData = $this->validateMainData($request);
         $translationData = $this->validateTranslationData($request);
 
-        $entry = Entry::create($mainData);
+        $entry = Entry::query()->create($mainData);
         $entry->translations()->create($translationData);
 
         return redirect()->route('entry.show', $entry->id);
@@ -33,41 +39,38 @@ class EntryController extends Controller
 
     public function show($id)
     {
-        $entry = Entry::with('translations', 'subject')->findOrFail($id);
-        $subject = $entry->subject;
-        $subjects = Subject::with('translations')->get();
+        $entry = Entry::with('translations')->findOrFail($id);
 
-        return view('entries.view', compact('entry', 'subject', 'subjects'));
+        return view('entries.view', compact('entry'));
     }
 
     public function edit($id, Request $request)
     {
         $entry = Entry::with('translations', 'subject')->findOrFail($id);
-        $subject = $entry->subject;
-        $subjects = Subject::with('translations')->get();
+        $subjects = $this->getSubjects();
         $locales = Locale::query()->get();
         $selectedLocale = $request->query('locale', 1);
 
-        return view('entries.edit', compact('entry', 'subject', 'subjects', 'locales', 'selectedLocale'));
+        return view('entries.edit', compact('entry', 'subjects', 'locales', 'selectedLocale'));
     }
 
     public function update(Request $request, $id): RedirectResponse
     {
-        $entry = Entry::findOrFail($id);
+        $entry = Entry::query()->findOrFail($id);
         $localeId = $request->input('locale_id');
 
         $mainData = $this->validateMainData($request, $id);
         $translationData = $this->validateTranslationData($request, $id);
 
-        $entry->update($mainData);
+        $entry?->update($mainData);
 
-        $translation = $entry->translations()->where('locale_id', $localeId)->first();
+        $translation = $entry?->translations()->where('locale_id', $localeId)->first();
 
         if ($translation) {
             $translation->update($translationData);
         } else {
             $translationData['locale_id'] = $localeId;
-            $entry->translations()->create($translationData);
+            $entry?->translations()->create($translationData);
         }
 
         return redirect()->route('entry.show', $id);
@@ -75,8 +78,8 @@ class EntryController extends Controller
 
     public function destroy($id): RedirectResponse
     {
-        $entry = Entry::findOrFail($id);
-        $entry->delete();
+        $entry = Entry::query()->findOrFail($id);
+        $entry?->delete();
 
         return redirect()->route('page.show', ['slug' => '']);
     }
@@ -87,6 +90,8 @@ class EntryController extends Controller
             'number' => 'required|integer|min:1|max:100',
             'subject_id' => 'required|integer|min:1',
             'unit' => 'required|integer|min:1|max:100',
+        ], [
+            'unit.required' => __('entry.error.subject'),
         ]);
     }
 
