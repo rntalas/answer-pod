@@ -22,4 +22,8 @@ return [
             'description' => 'We are sorry but the page you searched for wasn\'t found. To return to home click <a href="/" class="link">here</a>.',
         ],
     ],
+    'upload' => [
+        'click-or-drop' => 'Click <span class="font-semibold">here</span> or drop and drop the image',
+        'size' => 'PNG or JPG (1200–1600 >=)',
+    ],
 ];
