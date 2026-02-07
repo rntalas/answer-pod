@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Entry;
 use App\Models\Locale;
 use App\Models\Subject;
 use App\Models\SubjectTranslation;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\ValidationException;
 
 class SubjectController extends Controller
 {
@@ -18,102 +20,93 @@ class SubjectController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
-        $mainData = $this->validateMainData($request);
-        $translationData = $this->validateTranslationData($request);
+        $validated = $this->validate($request);
 
-        $subject = Subject::query()->create($mainData);
-        $subject->translations()->create($translationData);
+        $subject = Subject::create(['units' => $validated['units']]);
+        $subject->translations()->create([
+            'locale_id' => $validated['locale_id'],
+            'name' => $validated['name'],
+            'description' => $validated['description'] ?? null,
+        ]);
 
         return redirect()->route('page.show', ['slug' => '']);
     }
 
     public function show($id)
     {
-        $subject = Subject::with('translations')->findOrFail($id);
-
-        return view('subjects.view', compact('subject'));
+        return view('subjects.view', ['subject' => Subject::with('translations')->findOrFail($id)]);
     }
 
     public function edit($id, Request $request)
     {
-        $subject = Subject::with('translations')->findOrFail($id);
-        $locales = Locale::query()->get();
-        $selectedLocale = $request->query('locale', 1);
-
-        return view('subjects.edit', compact('subject', 'locales', 'selectedLocale'));
+        return view('subjects.edit', [
+            'subject' => Subject::with('translations')->findOrFail($id),
+            'locales' => Locale::all(),
+            'selectedLocale' => $request->query('locale', 1),
+        ]);
     }
 
     public function update(Request $request, $id): RedirectResponse
     {
-        $subject = Subject::query()->findOrFail($id);
-        $localeId = $request->input('locale_id');
+        $validated = $this->validate($request, $id);
+        $subject = Subject::findOrFail($id);
 
-        $mainData = $this->validateMainData($request, $id);
-        $translationData = $this->validateTranslationData($request, $id);
-
-        $subject?->update($mainData);
-
-        $translation = $subject?->translations()->where('locale_id', $localeId)->first();
-
-        if ($translation) {
-            $translation->update($translationData);
-        } else {
-            $translationData['locale_id'] = $localeId;
-            $subject?->translations()->create($translationData);
-        }
+        $subject->update(['units' => $validated['units']]);
+        $subject->translations()->updateOrCreate(
+            ['locale_id' => $validated['locale_id']],
+            ['name' => $validated['name'], 'description' => $validated['description'] ?? null]
+        );
 
         return redirect()->route('subject.show', $id);
     }
 
     public function destroy($id): RedirectResponse
     {
-        $subject = Subject::query()->findOrFail($id);
-
-        $subject?->entries()->delete();
-
-        $subject?->delete();
+        $subject = Subject::findOrFail($id);
+        $subject->entries()->delete();
+        $subject->delete();
 
         return redirect()->route('page.show', ['slug' => '']);
     }
 
-    protected function validateMainData(Request $request, ?int $id = null): array
-    {
-        return $request->validate([
-            'units' => 'required|integer|min:1|max:100',
-        ]);
-    }
-
-    protected function validateTranslationData(Request $request, ?int $id = null): array
+    protected function validate(Request $request, ?int $subjectId = null): array
     {
         $localeId = $request->input('locale_id');
-
         $ignoreId = null;
-        if ($id) {
-            $translation = SubjectTranslation::query()
-                ->where('subject_id', $id)
+
+        if ($subjectId) {
+            $ignoreId = SubjectTranslation::where('subject_id', $subjectId)
                 ->where('locale_id', $localeId)
-                ->first();
-            $ignoreId = $translation?->id;
+                ->value('id');
         }
 
-        return $request->validate([
+        $validated = $request->validate([
+            'units' => 'required|integer|min:1|max:100',
             'name' => [
                 'required',
                 'string',
                 'max:255',
-                Rule::unique('subject_translations')
-                    ->where(fn ($query) => $query->where('locale_id', $localeId))
-                    ->ignore($ignoreId),
+                Rule::unique('subject_translations')->where(fn ($q) => $q->where('locale_id', $localeId))->ignore($ignoreId),
             ],
-            'description' => [
-                'nullable',
-                'string',
-                'max:255',
-            ],
+            'description' => 'nullable|string|max:255',
             'locale_id' => 'required|exists:locales,id',
         ], [
             'name.required' => __('subject.error.name.required'),
             'name.unique' => __('subject.error.name.exists'),
         ]);
+
+        if ($subjectId) {
+            $maxUnit = Entry::where('subject_id', $subjectId)->max('unit');
+
+            if ($maxUnit && $validated['units'] < $maxUnit) {
+                throw ValidationException::withMessages([
+                    'units' => __('subject.error.units', ['unit' => $maxUnit]),
+                ]);
+
+                // dd(__('subject.error.units', ['unit' => $maxUnit]));
+            }
+        }
+
+        return $validated;
     }
 }
