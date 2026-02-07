@@ -6,9 +6,6 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('entry_images', static function (Blueprint $table) {
@@ -19,8 +16,8 @@ return new class extends Migration
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
 
-            $table->string('field');
-            $table->string('path');
+            $table->string('field')->nullable();
+            $table->string('path')->nullable();
             $table->unsignedInteger('position')->nullable();
 
             $table->index(['entry_id', 'field']);
@@ -29,9 +26,6 @@ return new class extends Migration
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('entry_translations_images');

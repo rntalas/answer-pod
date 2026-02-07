@@ -18,6 +18,9 @@ return new class extends Migration
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
 
+            $table->tinyInteger('statement')->nullable();
+            $table->tinyInteger('solution')->nullable();
+
             $table->timestamps();
 
             $table->unique(['subject_id', 'unit', 'number']);
