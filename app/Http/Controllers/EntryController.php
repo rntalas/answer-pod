@@ -118,10 +118,9 @@ class EntryController extends Controller
             ->where('number', $validated['number'])
             ->exists();
 
-
         if ($entry) {
             throw ValidationException::withMessages([
-                'unique' => __('entry.error.unique')
+                'unique' => __('entry.error.unique'),
             ]);
         }
 
