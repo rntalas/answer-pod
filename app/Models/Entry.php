@@ -2,20 +2,19 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Entry extends Resource
 {
     protected $fillable = [
         'number',
-        'unit',
-        'subject_id',
+        'unit_id',
         'statement',
         'solution',
-        'field',
-        'path',
         'position',
-        'locale_id',
+        'path',
+        'field',
     ];
 
     public function translations(): HasMany
@@ -31,5 +30,10 @@ class Entry extends Resource
     public function imagesByField(string $field): HasMany
     {
         return $this->hasMany(EntryImage::class)->where('field', $field);
+    }
+
+    public function unit(): BelongsTo
+    {
+        return $this->belongsTo(Unit::class);
     }
 }

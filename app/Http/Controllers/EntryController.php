@@ -4,97 +4,113 @@ namespace App\Http\Controllers;
 
 use App\Models\Entry;
 use App\Models\Locale;
-use App\Models\Subject;
-use Illuminate\Database\Eloquent\Collection;
+use App\Models\Unit;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 
 class EntryController extends Controller
 {
-    public function create()
+    public function create(Request $request)
     {
-        return view('entries.create', ['subjects' => $this->getSubjects()]);
+        $unitId = $request->query('unit');
+
+        $unit = Unit::findOrFail($unitId);
+
+        return view('entries.create', [
+            'unit' => $unit,
+            'locales' => Locale::all(),
+        ]);
     }
 
     public function store(Request $request): RedirectResponse
     {
-        $validated = $this->validate($request);
+        $unitId = $request->query('unit');
+        $unit = Unit::findOrFail($unitId);
 
-        $entry = Entry::query()->create([
-            'number' => $validated['number'],
-            'subject_id' => $validated['subject_id'],
-            'unit' => $validated['unit'],
-            'statement' => $validated['statement'],
-            'solution' => $validated['solution'],
+        $request->merge(['unit_id' => $unit->id]);
+
+        $entry = $this->saveEntry($request);
+
+        return redirect()->route('unit.show', [
+            'id' => $unitId,
         ]);
-
-        $entry->translations()->create([
-            'locale_id' => $validated['locale_id'],
-            'statement' => $validated['statement_text'] ?? null,
-            'solution' => $validated['solution_text'] ?? null,
-        ]);
-
-        $this->uploadImages($request, $entry);
-
-        return redirect()->route('entry.show', $entry->id);
     }
 
-    public function show($id)
+    public function show(Entry $entry)
     {
-        return view('entries.view', ['entry' => Entry::with('translations', 'images')->findOrFail($id)]);
+        return view('entries.view', [
+            'entry' => $entry->load('translations', 'images'),
+        ]);
     }
 
-    public function edit($id, Request $request)
+    public function edit(Entry $entry, Request $request)
     {
         return view('entries.edit', [
-            'entry' => Entry::with('translations', 'subject', 'images')->findOrFail($id),
-            'subjects' => $this->getSubjects(),
+            'entry' => $entry->load('translations', 'unit.subject', 'images'),
             'locales' => Locale::all(),
             'selectedLocale' => $request->query('locale', config('app.default_locale_id', 1)),
         ]);
     }
 
-    public function update(Request $request, $id): RedirectResponse
+    public function update(Request $request, Entry $entry): RedirectResponse
     {
-        $validated = $this->validate($request);
-        $entry = Entry::query()->findOrFail($id);
+        $request->merge(['unit_id' => $entry->unit_id]);
 
-        $entry?->update([
-            'number' => $validated['number'],
-            'subject_id' => $validated['subject_id'],
-            'unit' => $validated['unit'],
-            'statement' => $request->boolean('statement'),
-            'solution' => $request->boolean('solution'),
-        ]);
+        $this->saveEntry($request, $entry->id);
 
-        $entry?->translations()->updateOrCreate(
-            ['locale_id' => $validated['locale_id']],
-            ['statement' => $validated['statement_text'] ?? null, 'solution' => $validated['solution_text'] ?? null]
-        );
-
-        $this->uploadImages($request, $entry);
-
-        return redirect()->route('entry.show', $id);
+        return redirect()->route('entry.show', ['entry' => $entry->id]);
     }
 
-    public function destroy($id): RedirectResponse
+    public function destroy(Entry $entry): RedirectResponse
     {
-        $entry = Entry::query()->findOrFail($id);
+        $entry->images->each(function ($img) {
+            Storage::disk('public')->delete($img->path);
+        });
 
-        $entry?->images->each(fn ($img) => Storage::disk('public')->delete($img->path));
-        $entry?->delete();
+        $entry->delete();
 
-        return redirect()->route('page.show', ['slug' => '']);
+        return redirect()->back();
     }
 
-    protected function validate(Request $request): array
+    protected function saveEntry(Request $request, $id = null): Entry
+    {
+        $validated = $this->validateEntry($request, $id);
+
+        return DB::transaction(function () use ($validated, $request, $id) {
+
+            $entry = $id
+                ? Entry::findOrFail($id)
+                : new Entry;
+
+            $entry->fill([
+                'number' => $validated['number'],
+                'unit_id' => $validated['unit_id'],
+                'statement' => $validated['statement'],
+                'solution' => $validated['solution'],
+            ])->save();
+
+            $entry->translations()->updateOrCreate(
+                ['locale_id' => $validated['locale_id']],
+                [
+                    'statement' => $validated['statement_text'] ?? null,
+                    'solution' => $validated['solution_text'] ?? null,
+                ]
+            );
+
+            $this->uploadImages($request, $entry);
+
+            return $entry;
+        });
+    }
+
+    protected function validateEntry(Request $request, $id = null): array
     {
         $validated = $request->validate([
             'number' => 'required|integer|between:1,500',
-            'subject_id' => 'required|integer|min:1',
-            'unit' => 'required|integer|between:1,100',
+            'unit_id' => 'required|exists:units,id',
             'locale_id' => 'required|exists:locales,id',
             'statement' => 'required|boolean',
             'solution' => 'required|boolean',
@@ -105,7 +121,6 @@ class EntryController extends Controller
             'solution_image' => 'required_if:solution,1|nullable|array',
             'solution_image.*' => 'image|max:2048',
         ], [
-            'subject_id.required' => __('entry.error.subject'),
             'number.max' => __('entry.error.number_max'),
             'statement_text.required_if' => __('entry.error.statement'),
             'statement_image.required_if' => __('entry.error.statement'),
@@ -113,12 +128,12 @@ class EntryController extends Controller
             'solution_image.required_if' => __('entry.error.solution'),
         ]);
 
-        $entry = Entry::query()->where('subject_id', $validated['subject_id'])
-            ->where('unit', $validated['unit'])
+        $exists = Entry::where('unit_id', $validated['unit_id'])
             ->where('number', $validated['number'])
+            ->when($id, fn ($q) => $q->where('id', '!=', $id))
             ->exists();
 
-        if ($entry) {
+        if ($exists) {
             throw ValidationException::withMessages([
                 'unique' => __('entry.error.unique'),
             ]);
@@ -131,18 +146,22 @@ class EntryController extends Controller
     {
         foreach (['statement', 'solution'] as $field) {
             if ($request->hasFile("{$field}_image")) {
-                $entry->images()->where('field', $field)->get()->each(fn ($img) => Storage::disk('public')->delete($img->path) && $img->delete());
+
+                $entry->images()
+                    ->where('field', $field)
+                    ->each(function ($img) {
+                        Storage::disk('public')->delete($img->path);
+                        $img->delete();
+                    });
 
                 foreach ($request->file("{$field}_image") as $index => $file) {
-                    $entry->images()->create(['field' => $field, 'path' => $file->store("{$field}s", 'public'), 'position' => $index + 1]);
+                    $entry->images()->create([
+                        'field' => $field,
+                        'path' => $file->store("{$field}s", 'public'),
+                        'position' => $index + 1,
+                    ]);
                 }
             }
         }
-    }
-
-    protected function getSubjects(): Collection
-    {
-        return Subject::with(['translations' => fn ($q) => $q->select('id', 'subject_id', 'name', 'locale_id')
-            ->whereIn('locale_id', [Subject::getCurrentLocaleId(), config('app.default_locale_id', 1)])])->get(['id', 'units']);
     }
 }
