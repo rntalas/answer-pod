@@ -13,14 +13,16 @@
                 @enderror
             </div>
 
-            <label for="description">@lang('subject.label.description')</label>
-            <textarea name="description" id="description" cols="30" rows="8" placeholder="@lang('subject.placeholder.description')"
-                class="rounded-xl"></textarea>
+            <div class="flex flex-col gap-1">
+                <label for="description">@lang('subject.label.description')</label>
+                <textarea name="description" id="description" cols="30" rows="8" placeholder="@lang('subject.placeholder.description')"
+                    class="rounded-xl">{{ old('description') }}</textarea>
+            </div>
 
-            <div class="flex flex-col gap-2">
+            <div class="flex flex-col gap-2" x-data="{ units: {{ old('units', 1) }} }">
                 <label for="units">@lang('subject.label.units')</label>
-                <input type="number" id="units" name="units" min="1" max="100"
-                    value="{{ old('units', 1) }}" class="rounded-xl w-fit">
+                <input type="number" id="units" name="units" min="1" max="25" x-model="units"
+                    class="rounded-xl w-fit" @blur="units = parseInt(units) || 1">
             </div>
 
             <input type="hidden" name="locale_id" value="1">
