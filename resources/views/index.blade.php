@@ -18,6 +18,4 @@
     @else
         <p>@lang('app.subjects.!found')</p>
     @endif
-
-    <p>@lang('app.subjects.create')</p>
 </x-layout>

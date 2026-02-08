@@ -18,8 +18,24 @@
             </div>
 
             <a href="/">
-                <img src="{{ asset('images/logo.png') }}" alt="logo" class="h-5 md:h-10 lg:h-15 w-auto">
+                <img src="{{ asset('images/logo.png') }}" alt="@lang('Answer Pod')" class="h-5 md:h-10 lg:h-15 w-auto">
             </a>
+
+            @if (Route::is('home'))
+                <a href="{{ route('subject.create') }}" class="btn rounded-full">
+                    <span class="flex justify-center items-center gap-2 py-2 px-3">
+                        @svg('heroicon-o-plus', 'h-5 w-5') @lang('app.resources.subject')
+                    </span>
+                </a>
+            @endif
+
+            @if (Route::is('unit.show'))
+                <a href="{{ route('entry.create', ['unit' => request()->route('id')]) }}" class="btn rounded-full">
+                    <span class="flex justify-center items-center gap-2 py-2 px-3">
+                        @svg('heroicon-o-plus', 'h-5 w-5') @lang('app.resources.entry')
+                    </span>
+                </a>
+            @endif
         </div>
 
         <div class="flex justify-center items-center gap-4 lg:mr-20">
