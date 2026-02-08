@@ -10,20 +10,20 @@ return new class extends Migration
     {
         Schema::create('entries', static function (Blueprint $table) {
             $table->id();
-            $table->integer('number');
-            $table->unsignedInteger('unit');
 
-            $table->foreignId('subject_id')
-                ->constrained('subjects')
+            $table->foreignId('unit_id')
+                ->constrained()
                 ->cascadeOnUpdate()
                 ->cascadeOnDelete();
+
+            $table->integer('number');
 
             $table->tinyInteger('statement');
             $table->tinyInteger('solution');
 
             $table->timestamps();
 
-            $table->unique(['subject_id', 'unit', 'number']);
+            $table->unique(['unit_id', 'number']);
         });
     }
 
