@@ -4,10 +4,14 @@ return [
     'title' => 'Welcome!',
     'welcome' => 'Welcome to <a href="/" class="font-bold hover:underline">Answer Pod</a>!',
     'description' => 'The best place to store textbook materials for your school subjects.',
+    'resources' => [
+        'subject' => 'Subject',
+        'unit' => 'Unit',
+        'entry' => 'Entry',
+    ],
     'subjects' => [
         'found' => 'The following subjects were found:',
         '!found' => 'No subjects were found.',
-        'create' => 'To create a subject click <a href="/subject/create" class="link">here</a>.',
     ],
     'placeholder' => [
         'search' => 'Search…',
@@ -16,6 +20,7 @@ return [
     'delete' => 'Delete',
     'cancel' => 'Cancel',
     'action-undone' => 'This action cannot be undone.',
+    'language-selection' => 'Select Language',
     'error' => [
         '404' => [
             'title' => 'Page not found!',

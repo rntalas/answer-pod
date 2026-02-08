@@ -4,10 +4,14 @@ return [
     'title' => 'Καλωσορίσατε!',
     'welcome' => 'Καλωσορίσατε στο <a href="/" class="font-bold hover:underline">Answer Pod</a>!',
     'description' => 'Το καλύτερο μέρος για να αποθηκεύσετε υλικό από τα σχολικά σας βιβλία.',
+    'resources' => [
+        'subject' => 'Μάθημα',
+        'unit' => 'Ενότητα',
+        'entry' => 'Εγγραφή',
+    ],
     'subjects' => [
         'found' => 'Βρέθηκαν τα ακόλουθα μαθήματα:',
         '!found' => 'Δεν βρέθηκαν μαθήματα.',
-        'create' => 'Για να δημιουργήσετε ένα μάθημα, κάντε κλικ <a href="/subject/create" class="link">εδώ</a>.',
     ],
     'placeholder' => [
         'search' => 'Αναζήτηση...',
@@ -16,6 +20,7 @@ return [
     'delete' => 'Διαγραφή',
     'cancel' => 'Ακύρωση',
     'action-undone' => 'Αυτή η ενέργεια δεν μπορεί να αναιρεθεί.',
+    'language-selection' => 'Επιλογή γλώσσας',
     'error' => [
         '404' => [
             'title' => 'Η σελίδα δε βρέθηκε!',

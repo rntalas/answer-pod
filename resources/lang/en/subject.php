@@ -2,8 +2,10 @@
 
 return [
     'create' => 'Create a subject',
-    'units' => 'Number of units: :count.',
-    'entries' => 'You can see the entries per unit on the side menu. Otherwise, to create a new entry you can click <a href="/entry/create" class="link">here</a>.',
+    'edit' => 'Edit subject',
+    'units' => 'The following units were found:',
+    'unit' => 'Unit :number',
+    'entries' => 'You can see the entries per unit on the side menu.',
     'button' => [
         'add' => 'Add subject',
         'save' => 'Save changes',
